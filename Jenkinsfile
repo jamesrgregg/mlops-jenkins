@@ -5,7 +5,6 @@ pipeline {
             steps {
                 sh 'python --version'
                 sh 'git --version'
-                sh 'docker images'
             }    
         }
     }
