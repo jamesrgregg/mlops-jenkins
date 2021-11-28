@@ -41,7 +41,8 @@ pipeline {
     }
         stage('Cleaning up') {
             steps { 
-                sh "docker rmi $registry:$BUILD_NUMBER"
+                sh "docker images --format 'table {{.Repository}}\t{{.Tag}}\t{{.ID}}\t{{.CreatedAt}}\t{{.Size}}"    
+                sh "docker rmi $registry:latest"
             }
         }    
     }
