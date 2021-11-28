@@ -42,8 +42,8 @@ pipeline {
         stage('Cleaning up') {
             steps { 
                 sh "docker images --format 'table {{.Repository}}\t{{.Tag}}\t{{.ID}}\t{{.CreatedAt}}\t{{.Size}}'"  
-                sh "docker image prune -a --force"  
-                // sh "docker rmi $registry:latest"
+                //sh "docker image prune -a --force"  
+                sh "docker rmi $registry:latest"
             }
         }    
     }
