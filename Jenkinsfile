@@ -7,8 +7,8 @@ pipeline {
     }
     environment {
     //Use Pipeline Utility Steps plugin to read information from pom.xml into env variables
-        IMAGE = mlops-devops
-        VERSION = 1.0.0
+        IMAGE = "mlops-devops"
+        VERSION = "1.0.0"
   }
     stages {
         stage('Checkout code') {
