@@ -1,5 +1,7 @@
 pipeline {
-    agent { dockerfile true }
+    agent { dockerfile true 
+         additionalBuildArgs '-t mlops-nb'
+         }
     stages {
         stage('Build Image') {
             steps {
