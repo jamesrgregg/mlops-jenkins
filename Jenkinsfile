@@ -1,5 +1,4 @@
 pipeline {
-    agent none
 stages {
     stage('Build Docker image') {
         steps {
@@ -14,9 +13,9 @@ stages {
         TEST_CONTAINER_NAME = "ci-${APP_NAME}-${BUILD_NUMBER}"
         PREV_CONTAINER_NAME="ci-${APP_NAME}-${currentBuild.previousBuild.number}"
     }
-    stage('Build Docker image') {
+    stage('Tag Docker image') {
         steps {
-            echo '-=- build Docker image -=-'
+            echo '-=- build and tag Docker image -=-'
             sh "docker build -t ${ORG_NAME}/${APP_NAME}:${APP_VERSION} -t ${ORG_NAME}/${APP_NAME}:latest ."
         }
     }
