@@ -8,7 +8,7 @@ pipeline {
     stages { 
         stage('Cloning our Git') { 
             steps { 
-                git 'https://github.com/jamesrgregg/mlops-jenkins.git'
+                git 'https://github.com/jamesrgregg/mlops-jenkins'
             }
         } 
         stage('Building our image') { 
