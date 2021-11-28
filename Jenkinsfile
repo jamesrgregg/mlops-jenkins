@@ -7,8 +7,11 @@ pipeline {
     }
     environment {
     //Use Pipeline Utility Steps plugin to read information from pom.xml into env variables
-        IMAGE = "mlops-devops"
-        VERSION = "1.0.0"
+        registry = "jrgreggdevops/mlops-devops"
+        registryCredential = 'DockerHub_ID'
+        dockerImage = ''
+    
+        
   }
     stages {
         stage('Checkout code') {
@@ -17,17 +20,32 @@ pipeline {
         }
     }
 
-        stage('Build and Publish Image') {
+        stage('Build and Tag Image') {
             when {
                 branch 'main'  //only run these steps on the master branch
             }
             steps {
-                sh """
-                docker build -t ${IMAGE} .
-                docker tag ${IMAGE} ${IMAGE}:${VERSION}
-                docker push ${IMAGE}:${VERSION}
-                """
+                script { 
+                    dockerImage = docker.build registry + ":$BUILD_NUMBER" 
+                }
             }
         }
-  }   
-}
+        stage('Push Image') {
+            steps {
+                script { 
+                    docker.withRegistry( '', registryCredential ) { 
+                        dockerImage.push() 
+                    }
+            }
+        }
+    }
+        stage('Cleaning up') {
+            steps { 
+                sh "docker rmi $registry:$BUILD_NUMBER"
+            }
+        }    
+    }
+}    
+
+
+
