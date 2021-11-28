@@ -1,35 +1,36 @@
-
 pipeline {
-    agent any 
-    
-    environment {
-        ORG_NAME = "jrgreggdevops"
-        APP_NAME = "mlops-devops"
-        APP_VERSION = "1.0-SNAPSHOT"
-        APP_CONTEXT_ROOT = "/"
-        TEST_CONTAINER_NAME = "ci-${APP_NAME}-${BUILD_NUMBER}"
-        PREV_CONTAINER_NAME="ci-${APP_NAME}-${currentBuild.previousBuild.number}"
-    }
+    agent any
 
-  stages {
-    stage('Pull the Code') {
-        steps {
-            echo "-=- Start the Build -=-"
-        }
+  // using the Timestamper plugin we can add timestamps to the console log
+    options {
+        timestamps()
     }
-  
-    stage('Build Docker image') {
-        steps {
-            echo "-=- build Docker image -=-"
-            sh "docker build -t ${ORG_NAME}/${APP_NAME}:${APP_VERSION} -t ${ORG_NAME}/${APP_NAME}:latest ."
-        }
-    }
-
-   stage('Run Docker image') {
+    stages {
+        stage('Checkout code') {
             steps {
-                echo "-=- run Docker image -=-"
+                checkout scm
+        }
+    }
+
+        stage('Build and Publish Image') {
+            when {
+                branch 'master'  //only run these steps on the master branch
+            }
+            steps {
+                sh """
+                docker build -t ${IMAGE} .
+                docker tag ${IMAGE} ${IMAGE}:${VERSION}
+                docker push ${IMAGE}:${VERSION}
+                """
             }
         }
-
   }
+    post {
+    failure {
+      // notify users when the Pipeline fails
+      mail to: 'james.r.gregg@cox.net',
+          subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
+          body: "Something is wrong with ${env.BUILD_URL}"
+    }
+}
 }
