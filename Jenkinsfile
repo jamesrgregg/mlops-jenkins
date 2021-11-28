@@ -1,10 +1,7 @@
+
 pipeline {
-stages {
-    stage('Build Docker image') {
-        steps {
-            echo "-=- build Docker image -=-"  
-        }
-    agent { dockerfile true }
+    agent any 
+    
     environment {
         ORG_NAME = "jrgreggdevops"
         APP_NAME = "mlops-devops"
@@ -13,20 +10,26 @@ stages {
         TEST_CONTAINER_NAME = "ci-${APP_NAME}-${BUILD_NUMBER}"
         PREV_CONTAINER_NAME="ci-${APP_NAME}-${currentBuild.previousBuild.number}"
     }
-    stage('Tag Docker image') {
+
+  stages {
+    stage('Pull the Code') {
         steps {
-            echo '-=- build and tag Docker image -=-'
+            echo "-=- Start the Build -=-"
+        }
+    }
+  
+    stage('Build Docker image') {
+        steps {
+            echo "-=- build Docker image -=-"
             sh "docker build -t ${ORG_NAME}/${APP_NAME}:${APP_VERSION} -t ${ORG_NAME}/${APP_NAME}:latest ."
         }
     }
-    agent docker
-    stage('Push Docker image') {
-        steps {
-            echo '-=- push Docker image -=-'
-            sh 'docker images'
-            echo '-=- pushing images in next stage -=-'
+
+   stage('Run Docker image') {
+            steps {
+                echo "-=- run Docker image -=-"
+            }
         }
-    }
+
   }
- }
-} 
+}
