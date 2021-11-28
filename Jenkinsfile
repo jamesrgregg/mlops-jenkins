@@ -16,10 +16,11 @@ pipeline {
             sh "docker build -t ${ORG_NAME}/${APP_NAME}:${APP_VERSION} -t ${ORG_NAME}/${APP_NAME}:latest ."
         }
     }
-    stage('Build Docker image') {
+    stage('Push Docker image') {
         steps {
-            echo "-=- list Docker image -=-"
+            echo "-=- push Docker image -=-"
             sh "docker images"
+            echo '-=- pushing images in next stage -=-'
         }
     }
 }
