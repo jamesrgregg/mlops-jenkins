@@ -1,11 +1,36 @@
-pipeline {
-    agent { dockerfile true }
-    stages {
-        stage('Build Image') {
-            steps {
-                sh 'python train-lda.py'
-                sh 'python train-nn.py'
-            }    
+pipeline { 
+    environment { 
+        registry = "hub.docker.com/jrgreggdevops" 
+        registryCredential = 'jrgreggdevops' 
+        dockerImage = 'mlops-notebook' 
+    }
+    agent any 
+    stages { 
+        stage('Cloning our Git') { 
+            steps { 
+                git 'https://github.com/jamesrgregg/mlops-jenkins.git'
+            }
+        } 
+        stage('Building our image') { 
+            steps { 
+                script { 
+                    dockerImage = docker.build registry + ":$BUILD_NUMBER" 
+                }
+            } 
         }
+        stage('Deploy our image') { 
+            steps { 
+                script { 
+                    docker.withRegistry( '', registryCredential ) { 
+                        dockerImage.push() 
+                    }
+                } 
+            }
+        } 
+        stage('Cleaning up') { 
+            steps { 
+                sh "docker rmi $registry:$BUILD_NUMBER"
+            }
+        } 
     }
 }
