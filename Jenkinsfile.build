@@ -5,7 +5,7 @@ pipeline {
             steps {
                 sh 'python train-lda.py'
                 sh 'python train-nn.py'
-            }    
+            }   
         }
     }
 }
